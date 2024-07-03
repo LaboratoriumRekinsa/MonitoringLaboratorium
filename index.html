@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoring Laboratorium RIA - ITERA</title>
+    <!-- Include Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #fff;
+        }
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        h1 {
+            font-size: 1.5em;
+            margin: 10px 0;
+        }
+        .data-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        .data {
+            font-size: 1.5em;
+            margin: 10px;
+        }
+        .data h2 {
+            font-weight: bold;
+        }
+        .logo {
+            max-width: 150px;
+            margin-bottom: 20px;
+        }
+        .video-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        video {
+            min-width: 100%;
+            min-height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <div class="video-container">
+        <video autoplay muted loop>
+            <source src="Labrekinsa.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    <div class="overlay">
+        <img class="logo" src="Logo_ITERA.png" alt="ITERA Logo">
+        <h1>MONITORING LABORATORIUM REKAYASA INSTRUMENTASI DAN AUTOMASI</h1>
+        <div class="container">
+            <div class="data-container">
+                <div class="data" id="temperature">Temperature: -- °C</div>
+                <div class="data" id="humidity">Humidity: -- %</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase project configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCaYXbLnxfJeIbessV8HzGu5KQPD5OuiNg",
+            authDomain: "projectdht-53922.firebaseapp.com",
+            databaseURL: "https://projectdht-53922-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "projectdht-53922",
+            storageBucket: "projectdht-53922.appspot.com",
+            messagingSenderId: "217816470431",
+            appId: "1:217816470431:web:89f46b80bcf132b328a3aa"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        function updateTemperature(snapshot) {
+            const temperature = snapshot.val();
+            if (temperature !== null && temperature !== undefined) {
+                document.getElementById('temperature').textContent = `Temperature: ${temperature.toFixed(1)} °C`;
+            } else {
+                document.getElementById('temperature').textContent = 'Temperature: -- °C';
+            }
+        }
+
+        function updateHumidity(snapshot) {
+            const humidity = snapshot.val();
+            if (humidity !== null && humidity !== undefined) {
+                document.getElementById('humidity').textContent = `Humidity: ${humidity.toFixed(1)} %`;
+            } else {
+                document.getElementById('humidity').textContent = 'Humidity: -- %';
+            }
+        }
+
+        // Reference to the temperature and humidity data in Firebase Realtime Database
+        const tempRef = database.ref('sensor/temperature');
+        const humRef = database.ref('sensor/humidity');
+
+        // Set up listeners for real-time updates
+        tempRef.on('value', updateTemperature);
+        humRef.on('value', updateHumidity);
+    </script>
+</body>
+</html>
